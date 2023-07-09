@@ -1,0 +1,13 @@
+<!-- <div class="layout vertical start-justified"> -->
+<div>
+    <ui-prop message="Plat文件夹的位置">
+        <ui-label slot="label">Plat</ui-label>
+        <ui-file slot="content" ref="tsDir" type="directory" protocols="project"
+            @confirm="onConfirmPlatPath($event.target.value)"></ui-file>
+        <!-- <ui-input slot="content" v-value="configPath" disabled></ui-input>
+        <ui-button @confirm="onBtnClickOpenJsSavePath">打开</ui-button>
+        <ui-button @confirm="onBtnClickSelectConfigPath">选择目录</ui-button> -->
+    </ui-prop>
+    <ui-button class="green" @confirm="onClickCreateAdCfgTS">创建 AdCfg.ts</ui-button>
+    <ui-button class="green" @confirm="onClickUpdateAdCfgTS">更新 AdCfg.ts</ui-button>
+</div>

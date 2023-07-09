@@ -1,0 +1,56 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion PROP_COMPILE_SDK_VERSION.toInteger()
+
+    defaultConfig {
+        minSdkVersion PROP_MIN_SDK_VERSION
+        targetSdkVersion PROP_TARGET_SDK_VERSION
+        versionCode 1
+        versionName "1.0"
+        buildConfigField "String", "PROTOCOL_URL", PROTOCOL_URL
+        buildConfigField "String", "PRIVATE_URL", PRIVATE_URL
+        resValue "string", "CHANNEL", CHANNEL
+        resValue "string", "um_appkey", "6491456ba1a164591b35f18f"
+    }
+
+    sourceSets.main {
+        java.srcDirs "src"
+        res.srcDirs 'res'
+        jniLibs.srcDirs 'libs'
+        manifest.srcFile "AndroidManifest.xml"
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+    buildTypes {
+
+        release {
+            debuggable false
+            jniDebuggable false
+            renderscriptDebuggable false
+            minifyEnabled true
+            consumerProguardFiles 'proguard-rules.pro'
+            multiDexKeepProguard file('maindexlist.pro')
+        }
+
+        debug {
+            debuggable true
+            jniDebuggable true
+            renderscriptDebuggable true
+        }
+    }
+}
+
+dependencies {
+#IFUM
+    // 下面各SDK根据宿主App是否使用相关业务按需引入。
+    // 友盟统计SDK
+    implementation  'com.umeng.umsdk:common:9.6.1'// 必选
+    implementation  'com.umeng.umsdk:asms:1.8.0'// 必选
+    implementation 'com.umeng.umsdk:apm:1.7.0' // 错误分析模块改为独立库，看crash和性能数据请一定集成
+    implementation  'com.umeng.umsdk:abtest:1.0.0'//使用U-App中ABTest能力，可选
+#ENDUM
+}

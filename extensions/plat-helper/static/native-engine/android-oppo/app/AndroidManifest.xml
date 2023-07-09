@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.LinesXFree.nearme.gamecenter"
+    android:installLocation="auto">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
+
+    <application
+        android:name="com.cocos.game.App"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:requestLegacyExternalStorage="true"
+        android:usesCleartextTraffic="true">
+
+        <!-- Tell CocosNativeActivity the name of our .so -->
+        <meta-data
+            android:name="android.app.lib_name"
+            android:value="cocos" />
+        <meta-data
+            android:name="debug_mode"
+            android:value="false" /> <!-- 调试开关，发布时候设置fa -->
+        <meta-data
+            android:name="is_offline_game"
+            android:value="true" /> <!-- true:单机游戏 false:网游 -->
+        <meta-data android:name="app_key" android:value="27ac67379afc4d93925bdbceaa6b532e" />
+            <!--appKey,务必换成游戏自己的参数 -->
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" /> <!--9.0及以上设备可能需要 -->
+
+        <activity
+            android:name="com.cocos.game.AppActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+        <activity
+            android:name="com.cocos.game.LoginActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
+            android:exported="true"
+            android:launchMode="standard"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen" />
+        <activity
+            android:name="com.cocos.lib.CocosEditBoxActivity"
+            android:configChanges="orientation|keyboardHidden|screenSize|screenLayout"
+            android:screenOrientation="sensorLandscape"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar.Fullscreen" />
+    </application>
+
+</manifest>
