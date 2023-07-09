@@ -1,0 +1,25 @@
+{
+  "name": "umtrack-wx-game",
+  "version": "2.8.0",
+  "description": "微信小游戏友盟统计SDK",
+  "miniprogram": "lib",
+  "main": "lib/index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "umeng",
+    "weixin",
+    "wx",
+    "wx-game"
+  ],
+  "author": "umeng",
+  "license": "ISC",
+  "dependencies": {}
+}

@@ -1,0 +1,55 @@
+{
+    "name": "plat-helper",
+    "title": "plat-helper",
+    "package_version": 2,
+    "version": "1.1.9",
+    "DEBUG_WORD": "1.1.9.3",
+    "author": "bakabrid",
+    "description": "i18n:plat-helper.description",
+    "main": "./dist/main.js",
+    "contributions": {
+        "builder": "./dist/builder.js",
+        "menu": [
+            {
+                "path": "i18n:menu.panel",
+                "label": "i18n:plat-helper.open_panel",
+                "message": "plat-helper:open"
+            }
+        ],
+        "messages": {
+            "plat-helper:open": {
+                "methods": [
+                    "openPanel"
+                ]
+            }
+        }
+    },
+    "panels": {
+        "default": {
+            "title": "i18n:plat-helper.open_panel",
+            "type": "dockable",
+            "main": "dist/panels/default",
+            "size": {
+                "width": 400,
+                "height": 700,
+                "min-height": 50,
+                "min-width": 400
+            }
+        }
+    },
+    "dependencies": {
+        "@babel/types": "^7.21.4",
+        "@types/fs-extra": "^5.0.4",
+        "@types/node": "^14.5.2",
+        "fs-extra": "^10.0.0",
+        "vue": "^3.1.4"
+    },
+    "devDependencies": {
+        "adm-zip": "^0.5.10"
+    },
+    "scripts": {
+        "build": "tsc -b",
+        "watch": "tsc -w",
+        "pack": "node pack.js"
+    }
+}

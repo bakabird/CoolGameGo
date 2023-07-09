@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="800,600">
+  <displayList>
+    <text id="n1_6g6j" name="title" xy="249,138" size="302,80" fontSize="48" color="#ffffff" align="center" vAlign="middle" autoSize="none" text="CoolGame">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </text>
+    <component id="n5_uzar" name="progress" src="uzar3" fileName="ProgressBar.xml" xy="150,442">
+      <relation target="" sidePair="center-center,middle-middle"/>
+      <ProgressBar value="50" max="100"/>
+    </component>
+    <text id="n6_uzar" name="tip" xy="0,494" size="800,53" fontSize="24" color="#ffffff" align="center" vAlign="middle" autoSize="shrink" autoClearText="true" text="哈哈哈哈哈哈">
+      <relation target="" sidePair="middle-middle,rightext-right,leftext-left"/>
+    </text>
+    <text id="n7_uzar" name="version" xy="423,578" size="377,22" fontSize="12" color="#ffffff" align="right" vAlign="bottom" autoSize="none" autoClearText="true" text="">
+      <relation target="" sidePair="right-right,bottom-bottom"/>
+    </text>
+  </displayList>
+</component>

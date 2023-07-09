@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:windowNoTitle="true"
+    android:background="#00FFFFFF">
+
+    <LinearLayout
+        android:layout_width="300dp"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true"
+        android:background="#ffffff"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:paddingHorizontal="20dp"
+            android:paddingTop="15dp"
+            android:text="为了提供更好的游戏环境，请允许以下权限："
+            android:textAlignment="viewStart"
+            android:textColor="#333333"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/content"
+            android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="#00000000"
+            android:ems="10"
+            android:gravity="start|top"
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="10dp"
+            android:text="读写设备文件\n用于存储账号和截图的权限"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+
+        <Button
+            android:id="@+id/next"
+            android:layout_width="200dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="50dp"
+            android:layout_marginTop="5dp"
+            android:background="#555555"
+            android:text="下一步"
+            android:textColor="#FFFFFF"
+            android:textSize="16sp" />
+
+
+    </LinearLayout>
+
+</RelativeLayout>

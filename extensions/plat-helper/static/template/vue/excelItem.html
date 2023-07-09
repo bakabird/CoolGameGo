@@ -1,0 +1,28 @@
+<!-- <div class="layout horizontal center"
+     style="width: 100%;height: 20px;
+     background-color: #252525;"
+     onmouseover="this.style.backgroundColor='#505050'"
+     onmouseout="this.style.backgroundColor='#252525'"
+>
+    <div class="layout horizontal center " style="width: 20%">
+        <ui-checkbox v-bind:checked="data.isUse"
+                     v-on:change="onBtnClickUse"
+        ></ui-checkbox>
+        <div class="flex-1"> {{index+1}}</div>
+    </div>
+    <div style="width: 40%">
+        {{data.name}}
+    </div>
+    <div style="width: 40%">
+        {{data.sheet}}
+    </div>
+</div> -->
+<div style="display: flex;justify-content: space-around;" onmouseover="this.style.backgroundColor='#505050'"
+    onmouseout="this.style.backgroundColor='#252525'">
+    <ui-checkbox v-bind:checked="data.isUse" v-on:change="onBtnClickUse" style="flex: 1;"></ui-checkbox>
+    <ui-lable style="flex: 1;">{{index+1}}</ui-lable>
+    <ui-lable style="flex: 4;">{{data.name}}</ui-lable>
+    <ui-lable style="flex: 4;"> {{data.sheet}}</ui-lable>
+</div>
+
+<!-- <hr style="margin: 1px 0 1px 0"> -->

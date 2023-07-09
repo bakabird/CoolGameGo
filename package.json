@@ -1,0 +1,17 @@
+{
+  "name": "CoolGameGo",
+  "uuid": "3ede6e5c-c89b-48db-9080-74fc08a20826",
+  "creator": {
+    "version": "3.7.3"
+  },
+  "dependencies": {
+    "coolgame-cc": "^0.0.10",
+    "coolgame-cc-sys-fui": "^0.0.5",
+    "coolgame-cc-sys-time": "^0.0.3",
+    "fairygui-ccc370": "^1.0.7",
+    "gnfun": "^0.0.11",
+    "gulp": "^4.0.2",
+    "gulp-tinypng-with-cache-rdd-mod": "^1.0.4",
+    "spark-md5": "^3.0.2"
+  }
+}
