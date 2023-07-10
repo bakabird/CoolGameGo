@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="100,40" extention="Button" bgColor="#666666">
+  <controller name="button" pages="0,up,1,down,2,over,3,selectedOver" selected="0"/>
+  <displayList>
+    <graph id="n4_imnp" name="n4" xy="0,0" size="100,40" type="rect" lineSize="0" fillColor="#ffffcc33" corner="15">
+      <relation target="" sidePair="width-width,height-height"/>
+    </graph>
+    <text id="n3_pqlk" name="title" xy="0,0" size="100,40" fontSize="22" align="center" vAlign="middle" autoSize="none" bold="true" singleLine="true" text="">
+      <relation target="" sidePair="width-width,height-height"/>
+    </text>
+  </displayList>
+  <Button/>
+</component>

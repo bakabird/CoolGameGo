@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="500,40" extention="ProgressBar">
+  <displayList>
+    <graph id="n0_mjsy" name="n0" xy="0,0" size="500,40" alpha="0.4" type="rect" lineSize="0" lineColor="#ffa0a0a0" fillColor="#ff322f26" corner="20">
+      <relation target="" sidePair="width-width,height-height"/>
+    </graph>
+    <graph id="n1_mjsy" name="bar" xy="0,0" size="500,40" type="rect" lineSize="0" fillColor="#ffcbbc98" corner="20"/>
+    <text id="n2_mjsy" name="title" xy="0,-2" size="500,48" fontSize="27" color="#ffffff" align="center" vAlign="middle" autoSize="none" bold="true" strokeColor="#000000" text="">
+      <relation target="" sidePair="width-width,height-height"/>
+    </text>
+  </displayList>
+  <ProgressBar/>
+</component>

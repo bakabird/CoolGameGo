@@ -12,6 +12,8 @@ native
 # NPM
 #//////////////////////////
 node_modules/
+!extensions/excel2ts-cc370/node_modules
+!extensions/plat-helper/node_modules
 
 #//////////////////////////
 # VSCode

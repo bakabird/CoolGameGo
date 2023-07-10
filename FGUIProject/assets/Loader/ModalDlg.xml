@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<component size="800,600">
+  <controller name="type" pages="0,confirm,1,alert" selected="0"/>
+  <displayList>
+    <graph id="n0_pqlk" name="n0" xy="105,124" size="590,346" type="rect" lineSize="0" corner="7">
+      <relation target="" sidePair="center-center,middle-middle"/>
+    </graph>
+    <graph id="n1_pqlk" name="n1" xy="105,363" size="590,2" type="rect" lineSize="0" fillColor="#ffd4d4d4">
+      <gearDisplay controller="type" pages="0"/>
+      <relation target="n0_pqlk" sidePair="center-center,bottom-bottom"/>
+    </graph>
+    <graph id="n2_pqlk" name="n2" xy="399,365" size="2,106" type="rect" lineSize="0" fillColor="#ffd4d4d4">
+      <gearDisplay controller="type" pages="0"/>
+      <relation target="n0_pqlk" sidePair="center-center,bottom-bottom"/>
+    </graph>
+    <text id="n5_pqlk" name="tip" xy="157,162" size="486,183" fontSize="30" align="center" vAlign="middle" autoSize="shrink" bold="true" autoClearText="true" text="版本检测失败，尝试重启游戏或截图联系客服QQ(2422025128)。">
+      <relation target="n0_pqlk" sidePair="center-center,top-top"/>
+    </text>
+    <component id="n3_pqlk" name="no" src="uzar1" fileName="Btn.xml" xy="128,378" size="258,74">
+      <gearDisplay controller="type" pages="0"/>
+      <relation target="n0_pqlk" sidePair="left-left,bottom-bottom"/>
+      <Button title="取消"/>
+    </component>
+    <component id="n4_pqlk" name="yes" src="uzar1" fileName="Btn.xml" xy="412,378" size="260,74">
+      <gearXY controller="type" pages="0,1" values="412,378|270,374"/>
+      <relation target="n0_pqlk" sidePair="right-right,bottom-bottom"/>
+      <Button title="确定"/>
+    </component>
+  </displayList>
+</component>

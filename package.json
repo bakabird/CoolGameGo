@@ -10,6 +10,7 @@
     "coolgame-cc-sys-time": "^0.0.3",
     "fairygui-ccc370": "^1.0.7",
     "gulp": "^4.0.2",
-    "gulp-tinypng-with-cache-rdd-mod": "^1.0.4"
+    "gulp-tinypng-with-cache-rdd-mod": "^1.0.4",
+    "spark-md5": "^3.0.2"
   }
 }

@@ -2,6 +2,9 @@
 <packageDescription id="s7dhqm6n">
   <resources>
     <component id="ef3g0" name="LoaderDlg.xml" path="/" exported="true"/>
+    <component id="uzar1" name="Btn.xml" path="/"/>
+    <component id="uzar2" name="ModalDlg.xml" path="/" exported="true"/>
+    <component id="uzar3" name="ProgressBar.xml" path="/"/>
   </resources>
   <publish name=""/>
 </packageDescription>
