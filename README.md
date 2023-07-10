@@ -12,6 +12,7 @@ npm i fairygui-ccc370
 npm i gulp
 npm i gulp-tinypng-with-cache-rdd-mod
 npm i spark-md5
+npm i gnfun
 ```
 
 # 0x01 几个插件

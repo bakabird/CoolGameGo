@@ -10,6 +10,8 @@ import Xls from '../excel/Xls';
 import Plat from './plat/Plat';
 import CCCHotfix from './CCCHotfix';
 import { LoaderPlay } from './play/LoaderPlay';
+import { MainDlg } from './dlgs/MainDlg';
+import { CountdownRunner } from 'gnfun';
 const { ccclass, property } = _decorator;
 
 @ccclass('CoolGame')
@@ -42,6 +44,7 @@ export class CoolGame extends SKPGame {
     }
 
     private _load() {
+        let countdownEnter = new CountdownRunner(2, this._enter.bind(this));
         let loaderPlay = this.play(LoaderPlay);
         let uid = sys.localStorage.getItem('NOW')
         if (!uid) {
@@ -61,17 +64,24 @@ export class CoolGame extends SKPGame {
                 loaderPlay.dealHotfix(env).then(() => {
                     Plat.inst.setLoadingProgress(66);
                     Plat.inst.login(() => {
-                        Plat.inst.loadingComplete();
-                        this._enter()
+                        loaderPlay.loadMain().then(() => {
+                            Plat.inst.loadingComplete();
+                            countdownEnter.countdown();
+                        }).catch(err => {
+                            console.error(err);
+                        })
                     }, uid);
                 })
             });
         }).catch(err => {
             console.error(err);
         })
+        Go.tiemSys.delay(0.666, countdownEnter.bindedCountdown);
     }
 
     private _enter() {
+        Go.dlgKit.fetchDlg(MainDlg);
+        LoaderDlg.me.close();
         console.log("打印 Excel 数据：")
         Xls.exampleDatasArray.forEach((v, i) => {
             console.log(`[${i}]`, v);
