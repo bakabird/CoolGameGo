@@ -3,7 +3,7 @@
     "title": "plat-helper",
     "package_version": 2,
     "version": "1.1.9",
-    "DEBUG_WORD": "1.1.9.3",
+    "DEBUG_WORD": "1.1.9.4",
     "author": "bakabrid",
     "description": "i18n:plat-helper.description",
     "main": "./dist/main.js",

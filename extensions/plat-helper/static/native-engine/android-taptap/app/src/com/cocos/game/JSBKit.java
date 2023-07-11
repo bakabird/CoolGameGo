@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.qhhz.LinesXFree.taptap.R;
 import com.qhhz.cocos.libandroid.JSBKitBase;
+import com.qhhz.cocos.libandroid.Runkit;
 import com.qhhz.cocos.libandroid.SplashDialog;
 import com.tapsdk.antiaddictionui.AntiAddictionUIKit;
 
@@ -73,4 +74,8 @@ public class JSBKit extends JSBKitBase {
         }
     }
 
+    @Override
+    protected void OnEndGame(String arg) {
+        Runkit.get().ExitGame();
+    }
 }

@@ -19,6 +19,7 @@ public class RewardAd {
     private ADKit _adKit;
     private boolean autoPlay;
     private boolean disposed;
+    private boolean curAdVerify;
 
     public TTRewardVideoAd mttRewardVideoAd;
     public AppActivity appAct;
@@ -29,6 +30,7 @@ public class RewardAd {
         this.posId = posId;
         autoPlay = true;
         disposed = false;
+        curAdVerify = false;
     }
 
     public void Dispose() {
@@ -98,54 +100,63 @@ public class RewardAd {
         }
         AppActivity.get().runOnUiThread(() -> {
             if (mttRewardVideoAd != null) {
+                curAdVerify = false;
                 mttRewardVideoAd.setRewardAdInteractionListener(new TTRewardVideoAd.RewardAdInteractionListener() {
                     //广告的下载bar点击回调
                     @Override
                     public void onAdVideoBarClick() {
-
+                        Log.d(TAG, "onAdVideoBarClick");
                     }
 
                     //视频广告关闭回调
                     @Override
                     public void onAdClose() {
+                        Log.d(TAG, "onAdClose");
+                        if (curAdVerify) {
+                            JSBKit.get().ShowAdRet("1");
+                        } else  {
+                            JSBKit.get().ShowAdRet("0");
+                        }
+                        curAdVerify = false;
+                        mttRewardVideoAd = null;
                         loadRewardAD();
                     }
 
                     //视频播放完成回调
                     @Override
                     public void onVideoComplete() {
+                        Log.d(TAG, "onVideoComplete");
                         //  JsbBridge.sendToScript("onUserRewarded", "rewardAmount");
                     }
 
                     //视频广告播放错误回调
                     @Override
                     public void onVideoError() {
-
+                        Log.d(TAG, "onVideoError");
                     }
 
                     //视频播放完成后，奖励验证回调，rewardVerify：是否有效，rewardAmount：奖励梳理，rewardName：奖励名称，code：错误码，msg：错误信息
                     @Override
                     public void onRewardVerify(boolean rewardVerify, int rewardAmount, String rewardName, int code, String msg) {
-                        JSBKit.get().ShowAdRet("1");
-                        mttRewardVideoAd = null;
-                        loadRewardAD();
+                        Log.d(TAG, "onRewardVerify");
+                        curAdVerify = true;
                     }
 
                     @Override
                     public void onRewardArrived(boolean b, int i, Bundle bundle) {
-
+                        Log.d(TAG, "onRewardArrived");
                     }
 
                     //视频广告跳过回调
                     @Override
                     public void onSkippedVideo() {
-
+                        Log.d(TAG, "onSkippedVideo");
                     }
 
                     //视频广告展示回调
                     @Override
                     public void onAdShow() {
-
+                        Log.d(TAG, "onAdShow");
                     }
                 });
                 //展示广告，并传入广告展示的场景

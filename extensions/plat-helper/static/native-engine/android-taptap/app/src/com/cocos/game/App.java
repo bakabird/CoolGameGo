@@ -81,8 +81,8 @@ public class App extends Application {
             }
 
             @Override
-            public void ExitGame() {
-
+            public void ExitGame(Runnable onExit) {
+                AppActivity.get().ExitGame(onExit);
             }
         });
     }

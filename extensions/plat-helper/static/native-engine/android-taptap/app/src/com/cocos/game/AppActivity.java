@@ -36,6 +36,7 @@ import com.cocos.lib.CocosActivity;
 import com.cocos.service.SDKWrapper;
 import com.qhhz.LinesXFree.taptap.BuildConfig;
 import com.qhhz.LinesXFree.taptap.R;
+import com.qhhz.cocos.libandroid.Runkit;
 import com.qhhz.cocos.libandroid.SplashDialog;
 import com.tapsdk.antiaddiction.Config;
 import com.tapsdk.antiaddiction.constants.Constants;
@@ -98,8 +99,7 @@ public class AppActivity extends CocosActivity {
                     AntiAddictionUIKit.enterGame();
                     JSBKit.get().AntiAddictionRet();
                 } else if (code == Constants.ANTI_ADDICTION_CALLBACK_CODE.REAL_NAME_STOP) {
-                    AntiAddictionUIKit.exit();
-                    android.os.Process.killProcess(android.os.Process.myPid());
+                    Runkit.get().ExitGame();
                 }
             }
         });
@@ -197,5 +197,11 @@ public class AppActivity extends CocosActivity {
     public void onLowMemory() {
         SDKWrapper.shared().onLowMemory();
         super.onLowMemory();
+    }
+
+    public void ExitGame(Runnable run) {
+        run.run();
+        AntiAddictionUIKit.exit();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }
