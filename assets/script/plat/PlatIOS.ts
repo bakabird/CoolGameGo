@@ -26,6 +26,7 @@ export default class PlatIOS extends PlatBase {
     constructor() {
         super();
         if (NATIVE) {
+            jsb.jsbBridgeWrapper.removeAllListeners();
             jsb.jsbBridgeWrapper.addNativeEventListener("ShowAdRet", (code: string) => {
                 var icode = parseInt(code);
                 this.logCatch("ShowAdRet")
@@ -167,5 +168,9 @@ export default class PlatIOS extends PlatBase {
 
     public get uma(): UMA {
         return this._uma
+    }
+
+    public get packageVersion(): number {
+        return window.packageVersion;
     }
 }

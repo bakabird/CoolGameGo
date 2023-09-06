@@ -1,7 +1,7 @@
 import { sys } from "cc";
 import { BYTEDANCE, DEV, HUAWEI, NATIVE, OPPO, VIVO, WECHAT, XIAOMI } from "cc/env";
 import PlatAnd from "./PlatAnd";
-import PlatBase from "./PlatBase";
+import PlatBase, { Channel } from "./PlatBase";
 import PlatIOS from "./PlatIOS";
 import PlatMi from "./PlatMi";
 import PlatOPPO from "./PlatOPPO";
@@ -13,7 +13,9 @@ import PlatTT from "./PlatTT";
 
 export default class Plat {
     public static forceUsePlatWeb: boolean = false
+    public static forceUsePlatBase: PlatBase = null;
     public static get inst(): PlatBase {
+        if (Plat.forceUsePlatBase) return Plat.forceUsePlatBase;
         if (Plat.forceUsePlatWeb) return PlatWeb.getInstance();
         if (DEV) return PlatWeb.getInstance();
         if (WECHAT) {
@@ -41,6 +43,15 @@ export default class Plat {
     }
     public static get isIos() {
         return NATIVE && sys.os === sys.OS.IOS
+    }
+    public static get isMi() {
+        return XIAOMI
+    }
+    public static get isVivo() {
+        return Plat.inst.channel === Channel.Vivo && Plat.isAndroid
+    }
+    public static get isMI() {
+        return Plat.inst.channel === Channel.Mi && Plat.isAndroid
     }
 
 }

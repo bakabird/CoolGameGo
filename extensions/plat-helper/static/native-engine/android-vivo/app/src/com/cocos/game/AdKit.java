@@ -21,6 +21,7 @@ public class AdKit {
 
     private int gid;
     private AppActivity appAct;
+    private WaterflowerTemplateAd lastWaterflower;
     private boolean hasTryReqPermission = false;
     private String mEverShowPermissionTip = "";
     private HashMap<String, Pair<Integer,RewardAdHandler>> _rwdAdMap;
@@ -29,6 +30,7 @@ public class AdKit {
     private AdKit() {
         gid = 0;
         appAct = AppActivity.get();
+        lastWaterflower = null;
         _rwdAdMap = new HashMap<String, Pair<Integer,RewardAdHandler>>();
         _insAdMap = new HashMap<String, Pair<Integer,InsertAdHandler>>();
     }
@@ -92,5 +94,42 @@ public class AdKit {
 
     public void hideBanner() {
         BannerAd.hidedlg();
+    }
+
+    public void playTemplate(String posId, boolean force, int gravity, boolean debug, String widthMode, int widthDp,int scale) {
+        if (lastWaterflower == null) {
+            lastWaterflower = new WaterflowerTemplateAd(posId, force, gravity, debug, widthMode, widthDp, scale,
+                    AppActivity.get().getTemplateParentLayout(), AppActivity.get().getWaterFlowerLayout());
+        }
+    }
+
+    public void hideTemplate() {
+        if (lastWaterflower != null) {
+            lastWaterflower.close();
+            lastWaterflower = null;
+        }
+    }
+
+    public boolean noAdErrorCheck(int errcode) {
+        switch (errcode) {
+            case 4014:
+            case 4015:
+            case 40218:
+            case 40219:
+            case 402119:
+            case 402120:
+            case 402121:
+            case 402114:
+            case 402115:
+            case 402116:
+            case 402137:
+            case 402128:
+            case 402129:
+            case 402130:
+            case 40120008:
+                return true;
+            default:
+                return false;
+        }
     }
 }

@@ -1,4 +1,5 @@
-import PlatBase, { ADCallback, GamePlat } from "./PlatBase";
+import PlatBase, { ADCallback, AndLayoutGravity, GamePlat } from "./PlatBase";
+
 
 
 export default class PlatWX extends PlatBase {
@@ -13,11 +14,18 @@ export default class PlatWX extends PlatBase {
     }
 
     private _sysInfo: any = null;
+    // 激励广告
     private _nextShowAd: number = 0;
     private _videoAd: any = null;
     private _lastRwdPosId: string = null;
     private _onRwdAdSuc: () => void;
     private _onRwdAdFail: (errcode: number) => void;
+    // 模板广告
+    private _templateAd: any = null;
+    private _lastTemplateAdPosId: string = null;
+    private _onTemplateAdClose: (errocde?: number) => void;
+    // 插屏广告
+    private _onInsertAdClose: (errocde?: number) => void;
 
     public get sysInfo() {
         if (this._sysInfo) return this._sysInfo;
@@ -126,6 +134,137 @@ export default class PlatWX extends PlatBase {
             this._initRewardedAd(arg.posId);
         }
         this._videoAd.show();
+    }
+
+    public showInterstitialAd(arg: {
+        posId: string,
+        onAdClose?: (errcode?: number) => void
+    }) {
+        if (!this.isOverMinVersion("2.6.0")) {
+            console.log("当前版本不支持模板广告!");
+            arg.onAdClose(0)
+            return;
+        }
+        console.log("showInterstitialAd " + arg.posId);
+        this._onInsertAdClose = arg.onAdClose;
+        var newAd = wx.createInterstitialAd({
+            adUnitId: arg.posId,
+        });
+        newAd.onClose(() => {
+            console.log("wxInsertAd.onClose");
+            this._costInsertAdClose();
+        });
+        newAd.onError((res) => {
+            console.log("wxInsertAd.onError " + res?.errMsg + res?.errCode);
+            if (res.errCode == 1004) {
+                this._costInsertAdClose(-2);
+            } else {
+                this._costInsertAdClose(0);
+            }
+        });
+        newAd.show().catch((err) => {
+            console.error(err)
+            this._costInsertAdClose(0);
+        })
+    }
+
+    private _costInsertAdClose(errcode?: number) {
+        if (this._onInsertAdClose) {
+            console.log("_costInsertAdClose " + errcode);
+            this._onInsertAdClose?.(errcode);
+            this._onInsertAdClose = null;
+        }
+    }
+
+
+    /**
+     * 微信小游戏的模板广告只支持 格子广告。
+     * - 暂时只支持显示 格子-多格子-水平-100%-5格子
+     * @param arg 
+     * @returns 
+     */
+    public showTemplateAd(arg: {
+        posId: string,
+        onAdClose: (errcode?: number) => void,
+        widthMode: "Dip" | "MatchParent" | "WrapContent",
+        force: boolean,
+        widthDp?: number,
+        scale?: number,
+        gravity?: AndLayoutGravity,
+        debug?: boolean,
+        minigame?: {
+            type: number,
+        },
+    }) {
+        if (!this.isOverMinVersion("2.11.1")) {
+            console.log("当前版本不支持模板广告!");
+            arg.onAdClose(0)
+            return;
+        }
+        this.hideTemplateAd()
+        console.log("showTemplateAd " + arg.posId);
+        this._onTemplateAdClose = arg.onAdClose;
+        if (this._templateAd == null || this._lastTemplateAdPosId != arg.posId) {
+            this._templateAd?.destroy();
+            this._templateAd = this._produceTemplateAd(arg.posId, arg.gravity, arg.minigame.type);
+        }
+        this._templateAd.show();
+    }
+
+    private _produceTemplateAd(posId: string, gravity: AndLayoutGravity, type: number) {
+        // type
+        // 1 限定模板为“格子-多格子-水平-100%-5格子”
+        // 【待修复】2 限定模板为“格子-矩阵格子-2行-启用关闭按钮”
+        var width = 375;
+        var height = type == 1 ? 110 : 210;
+        var windowWidth = this._sysInfo.windowWidth;
+        var windowHeight = this._sysInfo.windowHeight;
+
+        var left = (gravity & AndLayoutGravity.Left) == AndLayoutGravity.Left ? 0 :
+            (gravity & AndLayoutGravity.Right) == AndLayoutGravity.Right ? (windowWidth - width) : (windowWidth - width) >> 1;
+        var top = (gravity & AndLayoutGravity.Top) == AndLayoutGravity.Top ? 0 :
+            (gravity & AndLayoutGravity.Bottom) == AndLayoutGravity.Bottom ? (windowHeight - height) : (windowHeight - height) >> 1;
+        var newAd = wx.createCustomAd({
+            adUnitId: posId,
+            adIntervals: 60,
+            style: {
+                left,
+                top,
+            }
+        });
+        newAd.onHide(() => {
+            console.log("wxCustomAd.onHide");
+            this._costTemplateAdClose();
+        });
+        newAd.onClose(() => {
+            console.log("wxCustomAd.onClose");
+            this._costTemplateAdClose();
+        });
+        newAd.onError((res) => {
+            console.log("wxCustomAd.onError " + res?.errMsg + res?.errCode);
+            if (res.errCode == 1004) {
+                this._costTemplateAdClose(-2);
+            } else {
+                this._costTemplateAdClose(0);
+            }
+        });
+        return newAd;
+    }
+
+    /**
+     * 隐藏当前的Banner广告
+     */
+    public hideTemplateAd() {
+        if (this._templateAd?.isShow()) {
+            this._templateAd.hide();
+            console.log("hide");
+        }
+    }
+
+    private _costTemplateAdClose(errcode?: number) {
+        console.log("_onCustomAdClose " + errcode);
+        this._onTemplateAdClose?.(errcode);
+        this._onTemplateAdClose = null;
     }
 
     public vibrate(type: "long" | "short") {

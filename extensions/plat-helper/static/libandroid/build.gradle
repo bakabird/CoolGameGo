@@ -11,7 +11,7 @@ android {
         buildConfigField "String", "PROTOCOL_URL", PROTOCOL_URL
         buildConfigField "String", "PRIVATE_URL", PRIVATE_URL
         resValue "string", "CHANNEL", CHANNEL
-        resValue "string", "um_appkey", "6491456ba1a164591b35f18f"
+        resValue "string", "um_appkey", UM_APPKEY
     }
 
     sourceSets.main {

@@ -19,6 +19,12 @@ android {
         minSdkVersion PROP_MIN_SDK_VERSION
         targetSdkVersion PROP_TARGET_SDK_VERSION
 
+        buildConfigField "String", "TAPTAP_CLIENT_ID", TAPTAP_CLIENT_ID // 7u2j4lhv2lsycimh0c
+        buildConfigField "String", "CSJ_APP_ID", CSJ_APP_ID
+        buildConfigField "String", "CSJ_APP_NAME", CSJ_APP_NAME
+        buildConfigField "String", "CSJ_BANNER_WIDTH", CSJ_BANNER_WIDTH
+        buildConfigField "String", "CSJ_BANNER_HEIGHT", CSJ_BANNER_HEIGHT
+
         versionCode 1
         versionName "1.0"
 
@@ -37,7 +43,7 @@ android {
         res.srcDirs "../res", 'res'
         jniLibs.srcDirs "../libs", 'libs'
         manifest.srcFile "AndroidManifest.xml"
-        assets.srcDir "${RES_PATH}/data"
+        assets.srcDirs = files("${RES_PATH}/data", "assets")
         jniLibs {
             // Vulkan validation layer
             // srcDir "${android.ndkDirectory}/sources/third_party/vulkan/src/build-android/jniLibs"
@@ -108,7 +114,26 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: '../libs', include: ['*.jar', '*.aar'])
+    implementation files("libs/TapCommon_3.16.6.aar") // TapTap 基础库
+    implementation files("libs/AntiAddiction_3.16.6.aar") // TapTap 防沉迷
+    implementation files("libs/AntiAddictionUI_3.16.6.aar") // TapTap 防沉迷UI
+    implementation files("libs/open_ad_sdk_5.2.0.5.aar") // 穿山甲
+
+    // 临时调试区 START
+//    implementation "com.android.support:appcompat-v7:28.0.0"; // 穿山甲 初始化应用
+//    implementation "com.android.support:support-v4:24.2.0"; // 穿山甲 适配下载
+//    // YSDK - start -
+//    implementation 'androidx.legacy:legacy-support-v4:1.0.0';
+//    // YSDK - end -
+    // 临时调试区 END
+
+    implementation 'androidx.appcompat:appcompat:1.3.1'
+    // YSDK - start -
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation files("libs/YSDK_Android_1.8.20_3e283b84.aar")
+    implementation files("libs/ysdkshell.aar")
+    // YSDK - end -
+
     implementation fileTree(dir: "${COCOS_ENGINE_PATH}/cocos/platform/android/java/libs", include: ['*.jar'])
     implementation project(':libservice')
     implementation project(':libcocos')

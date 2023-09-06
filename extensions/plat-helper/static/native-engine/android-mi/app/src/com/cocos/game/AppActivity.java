@@ -30,12 +30,16 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
+import com.LinesXFree.cocos.BuildConfig;
 import com.LinesXFree.cocos.R;
-import com.bytedance.sdk.openadsdk.TTAdConstant;
 import com.cocos.lib.CocosActivity;
 import com.cocos.service.SDKWrapper;
+import com.qhhz.cocos.libandroid.ISplashAdCallback;
 import com.qhhz.cocos.libandroid.IVoidCallback;
 import com.qhhz.cocos.libandroid.Runkit;
 import com.qhhz.cocos.libandroid.SplashDialog;
@@ -57,27 +61,93 @@ public class AppActivity extends CocosActivity {
     public final static String TAG = "AppActivity";
 
     private boolean mem_PlatReady = false;
+    private CountdownRunner mem_readyCountdown = null;
+    private Runnable mem_allReady = null;
+    private FrameLayout mTemplateParentLayout = null;
+    private FrameLayout mWaterFlowerLayout = null;
+
+    public FrameLayout getTemplateParentLayout() {
+        return mTemplateParentLayout;
+    }
+
+    public FrameLayout getWaterFlowerLayout() {
+        return mWaterFlowerLayout;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        Log.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         _me = this;
         // DO OTHER INITIALIZATION BELOW
         SDKWrapper.shared().init(this);
         JSBKit.get().build();
+        this.initTemplateLayout();
+        this.initWaterFlowerLayout();
+        this.splashOpen();
+    }
+
+    private void initTemplateLayout() {
+        mTemplateParentLayout =new FrameLayout(this);
+        FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        containerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL; //上下的位置信息
+        this.addContentView(mTemplateParentLayout, containerParams);
+    }
+
+    private void initWaterFlowerLayout() {
+        mWaterFlowerLayout =new FrameLayout(this);
+        FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        containerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL; //上下的位置信息
+        this.addContentView(mWaterFlowerLayout, containerParams);
+    }
+
+    private void splashOpen() {
         SplashDialog.Show(this, R.mipmap.ic_launcher);
+        String splashId = BuildConfig.MI_SPLASH_ID;
+        mem_readyCountdown = new CountdownRunner(2, () -> {
+            Log.d(TAG, "mem_readyCountdown run");
+            SplashDialog.Close();
+            mem_allReady.run();
+            mem_allReady = null;
+        });
+        AdKit.get().init(()->{
+            if (!splashId.equals("NULL")) {
+                Log.d(TAG, "Splash ShowWithAd");
+                SplashDialog.Close();
+                SplashDialog.ShowWithAd(this, new ISplashAdCallback() {
+                    @Override
+                    public void reqAd(ViewGroup group) {
+                        Log.d(TAG, "SplashDialog.ShowWithAd reqAd");
+                        AdKit.get().playSplash(group, splashId, ()->{
+                            mem_readyCountdown.countdown();
+                        });
+                    }
+                });
+            } else {
+                mem_readyCountdown.countdown();
+            }
+        });
     }
 
     public void checkReady(IVoidCallback onRdy) {
+        Log.d(TAG, "checkReady enter");
         if (mem_PlatReady) {
             onRdy.callback();
             return;
         }
-        SplashDialog.Close();
+        Log.d(TAG, "checkReady deal");
+        mem_allReady = ()-> {
+            onRdy.callback();
+        };
         MiCommplatform.getInstance().onUserAgreed(App.get());
-        AdKit.get().init();
-        onRdy.callback();
         mem_PlatReady = true;
+        mem_readyCountdown.countdown();
     }
 
     @Override
@@ -175,6 +245,10 @@ public class AppActivity extends CocosActivity {
 
     public boolean isPortrait() {
         return getResources().getConfiguration().orientation == ORIENTATION_PORTRAIT;
+    }
+
+    public int dpToPx(int dps) {
+        return Math.round(getResources().getDisplayMetrics().density * dps);
     }
 
     public void ExitGame(Runnable run) {

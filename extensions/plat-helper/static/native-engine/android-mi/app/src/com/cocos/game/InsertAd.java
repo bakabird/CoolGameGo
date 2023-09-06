@@ -6,11 +6,6 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
 import com.LinesXFree.cocos.BuildConfig;
-import com.LinesXFree.cocos.R;
-import com.bytedance.sdk.openadsdk.TTAdSdk;
-import com.cocos.lib.CocosOrientationHelper;
-import com.qhhz.cocos.libandroid.PermissionTipDialog;
-import com.qhhz.cocos.libandroid.SPStorage;
 import com.xiaomi.ad.mediation.MMAdConfig;
 import com.xiaomi.ad.mediation.MMAdError;
 import com.xiaomi.ad.mediation.fullscreeninterstitial.MMAdFullScreenInterstitial;
@@ -90,6 +85,7 @@ public class InsertAd {
                 Log.d(TAG, "rwdLoaded no ad");
                 statu = 0;
                 mAdError.setValue(new MMAdError(MMAdError.LOAD_NO_AD));
+                JSBKit.get().InsertAdRet("-2");
             }
         }
 
@@ -99,6 +95,7 @@ public class InsertAd {
             Log.e(TAG, "rwdLoad error " + error.errorMessage + " " + error.errorCode);
             statu = 0;
             mAdError.setValue(error);
+            JSBKit.get().InsertAdRet(error.externalErrorCode.equals("301007") ? "-2" : "0");
         }
     };
 
@@ -127,9 +124,13 @@ public class InsertAd {
 
     public void playAd() {
         if (statu == 3) {
+            JSBKit.get().InsertAdRet("0");
             return;
         }
-        if(!AdKit.get().checkAdPermission()) return;
+        if(!AdKit.get().checkAdPermission()) {
+            JSBKit.get().InsertAdRet("0");
+            return;
+        }
         if (statu != 2) {
             requestAd();
             return;
@@ -169,6 +170,7 @@ public class InsertAd {
                         mActivity.runOnUiThread(() -> {
                             requestAd();
                         });
+                        JSBKit.get().InsertAdRet("1");
                     }
 
                     @Override
@@ -183,6 +185,7 @@ public class InsertAd {
                         if(isBannerShowing) {
                             BannerAd.showdlg();
                         }
+                        JSBKit.get().InsertAdRet("0");
                     }
         });
         mActivity.runOnUiThread(() -> {

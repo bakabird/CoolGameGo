@@ -34,14 +34,15 @@ import android.widget.FrameLayout;
 
 import com.cocos.lib.CocosActivity;
 import com.cocos.service.SDKWrapper;
-//import com.qhhz.LinesXFree.taptap.BuildConfig;
-//import com.qhhz.LinesXFree.taptap.R;
+import com.qhhz.LinesXFree.yyb.BuildConfig;
 import com.qhhz.LinesXFree.yyb.R;
+import com.qhhz.cocos.libandroid.Runkit;
 import com.qhhz.cocos.libandroid.SplashDialog;
-//import com.tapsdk.antiaddiction.Config;
-//import com.tapsdk.antiaddiction.constants.Constants;
-//import com.tapsdk.antiaddictionui.AntiAddictionUICallback;
-//import com.tapsdk.antiaddictionui.AntiAddictionUIKit;
+import com.tapsdk.antiaddiction.Config;
+import com.tapsdk.antiaddiction.constants.Constants;
+import com.tapsdk.antiaddictionui.AntiAddictionUICallback;
+import com.tapsdk.antiaddictionui.AntiAddictionUIKit;
+import com.tencent.ysdk.api.YSDKApi;
 
 import java.util.Map;
 
@@ -81,24 +82,40 @@ public class AppActivity extends CocosActivity {
         SDKWrapper.shared().init(this);
         JSBKit.get().build();
 
-//        bannerBox = new FrameLayout(this);
-//        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
-//        params.gravity = Gravity.BOTTOM;
-//        addContentView(bannerBox, params);
+        bannerBox = new FrameLayout(this);
+        FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
+        params.gravity = Gravity.BOTTOM;
+        addContentView(bannerBox, params);
+
+        Config config = new Config.Builder()
+                .withClientId(BuildConfig.TAPTAP_CLIENT_ID) // TapTap 开发者中心对应 Client ID
+                .enableTapLogin(false)           // 是否启动 TapTap 快速认证
+                .showSwitchAccount(false)       // 是否显示切换账号按钮
+                .build();
+        AntiAddictionUIKit.init(this, config, new AntiAddictionUICallback() {
+            @Override
+            public void onCallback(int code, Map<String, Object> extras) {
+                if (code == Constants.ANTI_ADDICTION_CALLBACK_CODE.LOGIN_SUCCESS) {
+                    Log.d("TapTap-AntiAddiction", "玩家登录后判断当前玩家可以进行游戏");
+                    AntiAddictionUIKit.enterGame();
+                    JSBKit.get().AntiAddictionRet();
+                } else if (code == Constants.ANTI_ADDICTION_CALLBACK_CODE.REAL_NAME_STOP) {
+                    Runkit.get().ExitGame();
+                }
+            }
+        });
     }
 
     public void checkPermissionAndInit(boolean inc) {
         if (inc) mem_initStep += 1;
         if (mem_initStep == 0) {
+            App.get().initTTAd(suc -> {
+                AppActivity.get().checkPermissionAndInit(true);
+            });
+        } else {
+            mem_initStep = 100;
             JSBKit.get().CheckPlatReadyRet("");
-//            App.get().initTTAd(suc -> {
-//                AppActivity.get().checkPermissionAndInit(true);
-//            });
         }
-//        } else {
-//            mem_initStep = 100;
-//            JSBKit.get().CheckPlatReadyRet("");
-//        }
     }
 
     @Override
@@ -127,6 +144,7 @@ public class AppActivity extends CocosActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         SDKWrapper.shared().onActivityResult(requestCode, resultCode, data);
+        YSDKApi.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override
@@ -181,5 +199,11 @@ public class AppActivity extends CocosActivity {
     public void onLowMemory() {
         SDKWrapper.shared().onLowMemory();
         super.onLowMemory();
+    }
+
+    public void ExitGame(Runnable run) {
+        run.run();
+        AntiAddictionUIKit.exit();
+        android.os.Process.killProcess(android.os.Process.myPid());
     }
 }

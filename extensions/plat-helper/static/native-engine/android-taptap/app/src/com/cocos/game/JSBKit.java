@@ -2,7 +2,9 @@ package com.cocos.game;
 
 
 import android.util.Log;
+import android.view.Gravity;
 
+import com.qhhz.LinesXFree.taptap.BuildConfig;
 import com.qhhz.LinesXFree.taptap.R;
 import com.qhhz.cocos.libandroid.JSBKitBase;
 import com.qhhz.cocos.libandroid.Runkit;
@@ -54,6 +56,37 @@ public class JSBKit extends JSBKitBase {
         ADKit.get().hideBanner();
     }
 
+    protected void OnShowTemplateAd(String arg) {
+        Log.d(TAG, "OnShowTemplateAd " + arg);
+        try {
+            JSONObject data = new JSONObject(arg);
+            String posId = data.getString("posId");
+            int gravity = Gravity.NO_GRAVITY;
+            boolean force = data.getBoolean("force");
+            boolean debug = data.getBoolean("debug");
+            int argGravity = data.getInt("gravity");
+            String widthMode = data.getString("widthMode");
+            int widthDp = data.getInt("widthDp");
+            String binaryArgGravity = Integer.toBinaryString(argGravity);
+            Log.d(TAG, binaryArgGravity);
+            if (binaryArgGravity.charAt(5) == '1') gravity |= Gravity.TOP;
+            if (binaryArgGravity.charAt(4) == '1') gravity |= Gravity.BOTTOM;
+            if (binaryArgGravity.charAt(3) == '1') gravity |= Gravity.LEFT;
+            if (binaryArgGravity.charAt(2) == '1') gravity |= Gravity.RIGHT;
+            if (binaryArgGravity.charAt(1) == '1') gravity |= Gravity.CENTER_VERTICAL;
+            if (binaryArgGravity.charAt(0) == '1') gravity |= Gravity.CENTER_HORIZONTAL;
+            Log.d(TAG, posId + " " + debug + " " + gravity + " " + widthMode + " " + widthDp);
+            ADKit.get().playTemplate(posId, force, gravity, debug , widthMode, widthDp);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    protected void OnHideTemplateAd(String arg) {
+        Log.d(TAG, "OnHideTemplateAd " + arg);
+        ADKit.get().hideTemplate();
+    }
+
     @Override
     protected void OnCheckPlatReady(String arg) {
         mem_EverCheckPlatReady = true;
@@ -69,7 +102,7 @@ public class JSBKit extends JSBKitBase {
         Log.d(TAG, "CheckPlatReadyRet");
         SplashDialog.Close();
         if (mem_EverCheckPlatReady) {
-            dispatch("CheckPlatReadyRet", "Debug");
+            dispatch("CheckPlatReadyRet", BuildConfig.DEBUG ? "Debug" : "Release");
             mem_EverCheckPlatReady = false;
         }
     }

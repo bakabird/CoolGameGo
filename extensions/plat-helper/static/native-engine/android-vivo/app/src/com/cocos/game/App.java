@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.util.Log;
 
 
+import com.LinesXFree.cocos.BuildConfig;
 import com.cocos.lib.JsbBridgeWrapper;
 import com.qhhz.cocos.libandroid.IJSBWrapper;
 import com.qhhz.cocos.libandroid.IRunkitAction;
@@ -94,14 +95,13 @@ public class App extends Application {
         Boolean isPassPrivacy = Runkit.get().isAgreeProtocol(); //是否已同意隐私协议
         VivoConfigInfo sdkConfig = new VivoConfigInfo();
         sdkConfig.setPassPrivacy(isPassPrivacy);
-        VivoUnionSDK.initSdk(this, Constant.APP_ID, false, sdkConfig);
+        VivoUnionSDK.initSdk(this, Constant.APP_ID, BuildConfig.DEBUG, sdkConfig);
     }
 
     protected void initVivoAdSDK(IVoidCallback initOver) {
         VAdConfig adConfig = new VAdConfig.Builder()
                 .setMediaId(Constant.AD_MEDIA_ID)
-//                .setDebug(BuildConfig.DEBUG) //是否开启日志输出
-                .setDebug(false) //是否开启日志输出
+                .setDebug(BuildConfig.DEBUG) //是否开启日志输出
                 .setCustomController(new VCustomController() {
                     @Override
                     public boolean isCanUseLocation() {

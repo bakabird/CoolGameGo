@@ -3,6 +3,7 @@ package com.cocos.game;
 import android.app.Activity;
 import android.util.Log;
 
+import com.qhhz.cocos.libandroid.JSBKitBase;
 import com.qhhz.cocos.libandroid.SPStorage;
 import com.vivo.mobilead.unified.base.AdParams;
 import com.vivo.mobilead.unified.base.VivoAdError;
@@ -95,19 +96,27 @@ public class InsertAdHandler {
         @Override
         public void onAdFailed(VivoAdError error) {
             Log.d(TAG, "onAdFailed: " + error.toString());
-            if ((error.getCode() == 40120008 || error.getCode() == 4012) && adType == 0) {
-                //[2023-04-25 09:50:56.540] [29581] [29581] [3] [InsertAdHandler] : onAdFailed: VivoAdError{code=40120008, msg='没有广告数据，建议稍后重试'}
-                adType = 1;
-                AppActivity.get().runOnUiThread(()->{
-                    vivoInterstitialAd = null;
-                    play();
-                });
-            } else {
-                vivoInterstitialAd = null;
-                if(everCloseBanner) {
-                    BannerAd.showdlg();
-                    everCloseBanner = false;
+            boolean noAd = AdKit.get().noAdErrorCheck(error.getCode());
+            if (noAd) {
+                if(adType == 0) {
+                    //[2023-04-25 09:50:56.540] [29581] [29581] [3] [InsertAdHandler] : onAdFailed: VivoAdError{code=40120008, msg='没有广告数据，建议稍后重试'}
+                    adType = 1;
+                    AppActivity.get().runOnUiThread(()->{
+                        vivoInterstitialAd = null;
+                        play();
+                    });
+                    return;
                 }
+            }
+            vivoInterstitialAd = null;
+            if(everCloseBanner) {
+                BannerAd.showdlg();
+                everCloseBanner = false;
+            }
+            if(noAd) {
+                JSBKit.get().InsertAdRet("-2");
+            } else  {
+                JSBKit.get().InsertAdRet("0");
             }
         }
 
@@ -134,6 +143,7 @@ public class InsertAdHandler {
                 BannerAd.showdlg();
                 everCloseBanner = false;
             }
+            JSBKit.get().InsertAdRet("1");
         }
     };
 
@@ -156,6 +166,11 @@ public class InsertAdHandler {
         @Override
         public void onVideoError(VivoAdError error) {
             Log.d(TAG, "onVideoError: " + error.toString());
+            if(AdKit.get().noAdErrorCheck(error.getCode())) {
+                JSBKit.get().InsertAdRet("-2");
+            } else  {
+                JSBKit.get().InsertAdRet("0");
+            }
         }
 
         @Override

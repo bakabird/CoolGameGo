@@ -16,8 +16,6 @@ public abstract class JSBKitBase {
 
     protected IJSBWrapper mem_jbw;
 
-    private boolean mem_EverCheckPlatReady = false;
-
     public JSBKitBase() {
 
     }
@@ -51,6 +49,14 @@ public abstract class JSBKitBase {
         listen("HideBannerAd", arg -> {
             Log.d(TAG, "HideBannerAd");
             this.OnHideBannerAd(arg);
+        });
+        listen("ShowTemplateAd", arg -> {
+            Log.d(TAG, "ShowTemplateAd");
+            this.OnShowTemplateAd(arg);
+        });
+        listen("HideTemplateAd", arg -> {
+            Log.d(TAG, "HideTemplateAd");
+            this.OnHideTemplateAd(arg);
         });
         listen("ShowInterstitialAd", arg -> {
             Log.d(TAG, "ShowInterstitialAd");
@@ -105,6 +111,14 @@ public abstract class JSBKitBase {
 //        DoNothings At Default
     }
 
+    protected void OnShowTemplateAd(String arg) {
+//        DoNothings At Default
+    }
+
+    protected void OnHideTemplateAd(String arg) {
+//        DoNothings At Default
+    }
+
     protected void OnShowInterstitialAd(String arg) {
 //        DoNothings At Default
     }
@@ -123,6 +137,22 @@ public abstract class JSBKitBase {
     public void ShowAdRet(String code) {
         Log.d(TAG, "ShowAdRet " + code);
         dispatch("ShowAdRet", code);
+    }
+
+    /**
+     * @param code 0失败 1已关闭 -2没广告
+     */
+    public void TemplateAdRet(String code) {
+        Log.d(TAG, "TemplateAdRet " + code);
+        dispatch("TemplateAdRet", code);
+    }
+
+    /**
+     * @param code 0失败 1已关闭 -2没广告
+     */
+    public void InsertAdRet(String code) {
+        Log.d(TAG, "InsertAdRet " + code);
+        dispatch("InsertAdRet", code);
     }
 
     /**

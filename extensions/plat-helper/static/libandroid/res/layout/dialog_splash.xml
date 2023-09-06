@@ -10,5 +10,13 @@
         android:id="@+id/iv_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:alpha="0.0"/>
+        android:alpha="0.0"
+        android:visibility="invisible" />
+
+    <FrameLayout
+        android:id="@+id/splash_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible" />
+
 </RelativeLayout>

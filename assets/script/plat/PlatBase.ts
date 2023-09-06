@@ -1,11 +1,11 @@
 import { game } from "cc";
 import AdCfg from "./custom/AdCfg";
 import Plat from "./Plat";
+import { PlatHWParam } from "./PlatHW";
 
 export type ADCallback = (isSuc: boolean) => void;
 
 export enum GamePlat {
-    dev = "dev",
     web = "web",
     wx = "wx",
     vivo = "vivo",
@@ -26,6 +26,16 @@ export enum Channel {
     Default = "Default",
 }
 
+export enum AndLayoutGravity {
+    Top = 0b0001,
+    Bottom = 0b0010,
+    Left = 0b0100,
+    Right = 0b1000,
+    CenterVertical = 0b0001_0000,
+    CenterHorizontal = 0b0010_0000,
+    Center = CenterVertical | CenterHorizontal,
+}
+
 export type Plat_ShareRecordOption = {
     vidPath?: string,
     hashtag_list?: Array<string>,
@@ -37,22 +47,29 @@ export default class PlatBase {
 
     protected popTip: (tip: string) => void;
     protected isLandsacpe: boolean;
+    protected huaweiParam: PlatHWParam;
 
 
     /**
      * 初始化
-     * @param option 初始化参数
-     * @param option.popTip 弹出提示
-     * @param option.isLandsacpe 是否横屏
+     * @param {object} option 初始化参数
+     * @param {(tip: string) => void} option.popTip 弹出提示
+     * @param {boolean} option.isLandsacpe 是否横屏
+     * @param {object} option.usePlatWeb [可选]是否在对应平台上强制使用 PlatWeb
+     * @param {object} option.replacePlat [可选]在对应平台上改用自定义的 PlatBase 类
+     * @param {PlatHWParam} option.huaweiParam [可选]华为小游戏参数
      * @returns 
      */
     public init(option: {
         popTip: (tip: string) => void,
         isLandsacpe: boolean,
-        /** 是否在对应平台上强制使用PlatWeb */
         usePlatWeb?: {
             [key in GamePlat]?: boolean
         },
+        replacePlat?: {
+            [key in GamePlat]?: { new(): PlatBase }
+        },
+        huaweiParam?: PlatHWParam,
     }) {
         if (this._isInit) return;
         if (
@@ -63,11 +80,16 @@ export default class PlatBase {
         }
         AdCfg.ajustByPlat()
         this.popTip = option.popTip;
+        this.huaweiParam = option.huaweiParam;
         this.isLandsacpe = this.isLandsacpe;
         this._isInit = true;
         // console.error(this.plat)
-        if (option.usePlatWeb && option.usePlatWeb[this.plat]) {
+        if (option.replacePlat && option.replacePlat[this.plat] && !Plat.forceUsePlatBase) {
+            Plat.forceUsePlatBase = new option.replacePlat[this.plat]();
+            Plat.inst.init(option);
+        } else if (option.usePlatWeb && option.usePlatWeb[this.plat]) {
             Plat.forceUsePlatWeb = true;
+            Plat.inst.init(option);
         }
     }
 
@@ -160,14 +182,68 @@ export default class PlatBase {
     }
 
     /**
+     * 播放模板广告 
+     * @param arg - 参数
+     * @param {String} arg.posId - 广告位id。建议配置在 AdCfg 中，如不需要传null即可
+     * @param {Function} arg.onAdClose - 广告结束回调。errcode，正常被关闭时为 null；无广告时为 -2；播放失败时为 0。
+     * @param {String} arg.widthMode - 宽度模式：Dip（走 widthDp 的值） | MatchParent（跟屏幕同宽） | WrapContent(走内容宽度)
+     * @param {boolean} arg.force - 是否强制玩家点击广告
+     * @param {number} arg.widthDp - 可选，默认300。Dip模式下的宽度
+     * @param {number} arg.scale - 可选，默认100。VIVO-缩放值*100
+     * @param {boolean} arg.debug - 可选，默认false。是否调试
+     * @param {Object} arg.minigame - 可选，小游戏平台下的参数
+     * @param {number} arg.minigame.type - 类型。1：类似banner的长条。2：类似插屏。
+     *      微信中：
+     *             1 限定模板为“格子-多格子-水平-100%-5格子”
+     *             【待修复】2 限定模板为“格子-矩阵格子-2行-启用关闭按钮”
+     * @param {AndLayoutGravity} arg.gravity - 可选，默认居中贴底。调整广告的布局位置 
+     *      AndLayoutGravity.Top
+     *      AndLayoutGravity.Top | AndLayoutGravity.Left
+     *      AndLayoutGravity.CenterHorizontal | AndLayoutGravity.Bottom
+     *      AndLayoutGravity.Center
+     */
+    public showTemplateAd(arg: {
+        posId: string,
+        onAdClose: (errcode?: number) => void,
+        widthMode: "Dip" | "MatchParent" | "WrapContent",
+        force: boolean,
+        widthDp?: number,
+        scale?: number,
+        gravity?: AndLayoutGravity,
+        debug?: boolean,
+        minigame?: {
+            type: number,
+        },
+    }) {
+        console.log("PlatBase.showTemplateAd posId," + arg.posId);
+        console.log("PlatBase.showTemplateAd onAdClose," + arg.onAdClose);
+        console.log("PlatBase.showTemplateAd widthMode," + arg.widthMode);
+        console.log("PlatBase.showTemplateAd force," + arg.force);
+        console.log("PlatBase.showTemplateAd widthDp," + arg.widthDp);
+        console.log("PlatBase.showTemplateAd scale," + arg.scale);
+        console.log("PlatBase.showTemplateAd gravity," + arg.gravity);
+        console.log("PlatBase.showTemplateAd debug," + arg.debug);
+    }
+
+    /**
+     * 隐藏当前的Banner广告
+     */
+    public hideTemplateAd() {
+        console.log("hideTemplateAd");
+    }
+
+    /**
      * 播放插屏广告
      * @param arg - 参数
      * @param arg.posId - 广告位id。建议配置在 AdCfg 中，如不需要传null即可
+     * @param arg.onAdClose - 广告结束回调。errcode，正常被关闭时为 null；无广告时为 -2；播放失败时为 0。
      */
     public showInterstitialAd(arg: {
         posId: string,
+        onAdClose?: (errcode?: number) => void
     }) {
-        console.log("playInterstitialAd ", arg.posId);
+        console.log("PlatBase.showInterstitialAd posId," + arg.posId);
+        console.log("PlatBase.showInterstitialAd onAdClose," + arg.onAdClose);
     }
 
     /**
@@ -259,11 +335,18 @@ export default class PlatBase {
     }
 
     public get plat(): GamePlat {
-        return GamePlat.dev;
+        return GamePlat.web;
     }
 
     public get channel(): Channel {
         return Channel.Default;
+    }
+
+    /**
+     * 包版本：一般是原生平台使用
+     */
+    public get packageVersion(): number {
+        return -1;
     }
 }
 

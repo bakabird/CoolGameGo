@@ -1,6 +1,5 @@
 package com.cocos.game;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Color;

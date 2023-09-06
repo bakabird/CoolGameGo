@@ -21,11 +21,12 @@ android {
 
         buildConfigField "String", "MI_APP_ID", MI_APP_ID
         buildConfigField "String", "MI_APP_NAME", MI_APP_NAME
+        buildConfigField "String", "MI_SPLASH_ID", MI_SPLASH_ID
         buildConfigField "int", "DESIGN_WIDTH", DESIGN_WIDTH
         buildConfigField "int", "DESIGN_HEIGHT", DESIGN_HEIGHT
 
-        versionCode 1
-        versionName "1.0"
+        versionCode PACK_VERSION.toInteger()
+        versionName PACK_VERSION_NAME
 
         externalNativeBuild {
             cmake {

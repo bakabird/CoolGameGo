@@ -26,6 +26,7 @@ package com.cocos.game;
 
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
@@ -65,6 +66,18 @@ public class AppActivity extends CocosActivity {
 
     public ViewGroup bannerBox;
 
+    private FrameLayout mTemplateParentLayout = null;
+
+    private FrameLayout mWaterFlowerLayout = null;
+
+    public FrameLayout getTemplateParentLayout() {
+        return mTemplateParentLayout;
+    }
+
+    public FrameLayout getWaterFlowerLayout() {
+        return mWaterFlowerLayout;
+    }
+
     public boolean IsAllReady() {
         return mem_initStep >= 100;
     }
@@ -72,6 +85,7 @@ public class AppActivity extends CocosActivity {
     public boolean isPortatil() {
         return getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT;
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         _me = this;
@@ -80,12 +94,41 @@ public class AppActivity extends CocosActivity {
         // DO OTHER INITIALIZATION BELOW
         SDKWrapper.shared().init(this);
         JSBKit.get().build();
+        initTemplateLayout();
+        initWaterFlowerLayout();
+        initBannerBox();
+        initAntiAddiction();
+    }
 
+    private void initTemplateLayout() {
+        mTemplateParentLayout =new FrameLayout(this);
+        FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        containerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL; //上下的位置信息
+        mTemplateParentLayout.setBackgroundColor(Color.HSVToColor(new float[]{0, 0, 1}));
+        this.addContentView(mTemplateParentLayout, containerParams);
+    }
+
+    private void initWaterFlowerLayout() {
+        mWaterFlowerLayout =new FrameLayout(this);
+        FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        containerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL; //上下的位置信息
+        this.addContentView(mWaterFlowerLayout, containerParams);
+    }
+
+    private void initBannerBox() {
         bannerBox = new FrameLayout(this);
         FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         params.gravity = Gravity.BOTTOM;
         addContentView(bannerBox, params);
+    }
 
+    private void initAntiAddiction() {
         Config config = new Config.Builder()
                 .withClientId(BuildConfig.TAPTAP_CLIENT_ID) // TapTap 开发者中心对应 Client ID
                 .enableTapLogin(false)           // 是否启动 TapTap 快速认证
@@ -203,5 +246,9 @@ public class AppActivity extends CocosActivity {
         run.run();
         AntiAddictionUIKit.exit();
         android.os.Process.killProcess(android.os.Process.myPid());
+    }
+
+    public int dpToPx(int dps) {
+        return Math.round(getResources().getDisplayMetrics().density * dps);
     }
 }

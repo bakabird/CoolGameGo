@@ -52,7 +52,7 @@ public class ProtocolConfirmActivity extends Activity {
 
     private void initConfirmContent() {
         TextView t = (TextView) findViewById(R.id.protocolConfirmContent);
-        String str = "感谢您使用本产品，请在使用前认真阅读\n" + "《隐私声明》，《用户协议》确认同意后即可" + "开启服务。使用过程中，我们将在根据具体功" + "能需要获取集项手机权限时，再次请您确认同" + "意，并在条款说明的范围内收集、使用、共享" + "并保护您的个人信息;如您拒绝开启权限，将不" + "影响其他功能的使用。\n客服QQ：2422025128";
+        String str = "感谢您使用本产品，请在使用前认真阅读《隐私声明》，" + "《用户协议》确认同意后即可" + "开启服务。使用过程中，我们将在根据具体功" + "能需要获取集项手机权限时，再次请您确认同" + "意，并在条款说明的范围内收集、使用、共享" + "并保护您的个人信息;如您拒绝开启权限，将不" + "影响其他功能的使用。\n客服QQ：2422025128";
 
         SpannableStringBuilder ssb = new SpannableStringBuilder();
         Activity self = this;

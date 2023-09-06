@@ -29,15 +29,18 @@ public class ADKit {
 
     private int gid;
     private boolean isSDKIniting = false;
+    private boolean isAdChecking = false;
     private boolean hasTryReqPermission = false;
     private String mEverShowPermissionTip = "";
     private TTAdNative mTTAdNative;
+    private WaterflowerTemplateAd lastWaterflower;
     private HashMap<String, Pair<Integer,RewardAd>> _rwdAdMap;
     private HashMap<String, Pair<Integer,InsertAd>> _insAdMap;
 
     private ADKit() {
         gid = 0;
         appAct = AppActivity.get();
+        lastWaterflower = null;
         _rwdAdMap = new HashMap<String, Pair<Integer,RewardAd>>();
         _insAdMap = new HashMap<String, Pair<Integer,InsertAd>>();
     }
@@ -75,6 +78,9 @@ public class ADKit {
         if (this.isSDKIniting) {
             return -102;
         }
+        if (this.isAdChecking) {
+            return -1;
+        }
         if (!TTAdSdk.isInitSuccess()) {
             this.isSDKIniting = true;
             App.get().initTTAd(suc -> this.onSDKInited(suc));
@@ -84,11 +90,13 @@ public class ADKit {
         Log.d(TAG, "now: " + System.currentTimeMillis() + " " + nextTryTime);
         if (System.currentTimeMillis() > nextTryTime) {
             if (!isEverShowPermissionTip()) {
+                isAdChecking = true;
                 AppActivity.get().runOnUiThread(() -> {
                     PermissionTipDialog.Title = "为了提供更好的广告服务，请允许以下权限：";
                     PermissionTipDialog.ContentHtml = "<b>设备电话权限</b><br/>用于获取识别码，以进行广告监测归因、反作弊";
                     PermissionTipDialog.Callback = () -> {
                         setEverShowPermissionTip("showed");
+                        isAdChecking = false;
                         reqPermission();
                     };
                     PermissionTipDialog dlg = new PermissionTipDialog(AppActivity.get());
@@ -164,5 +172,23 @@ public class ADKit {
 
     public void hideBanner() {
         BannerAd.hidedlg();
+    }
+
+    public void playTemplate(String posId, boolean force, int gravity, boolean debug, String widthMode, int widthDp) {
+        if (this.adCheck() < 0)  {
+            JSBKit.get().TemplateAdRet("0");
+            return;
+        };
+        if (lastWaterflower == null) {
+            lastWaterflower = new WaterflowerTemplateAd(posId, force, gravity, debug, widthMode, widthDp,
+                    AppActivity.get().getTemplateParentLayout(), AppActivity.get().getWaterFlowerLayout());
+        }
+    }
+
+    public void hideTemplate() {
+        if (lastWaterflower != null) {
+            lastWaterflower.close();
+            lastWaterflower = null;
+        }
     }
 }

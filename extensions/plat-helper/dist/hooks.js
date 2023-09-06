@@ -14,13 +14,35 @@ const CfgUtil_1 = __importDefault(require("./CfgUtil"));
 const UmKit_1 = __importDefault(require("./UmKit"));
 let rawPlatTSDir = "";
 const PACKAGE_NAME = 'plat-helper';
-const Cifum = "#IFUM";
-const Cendum = "#ENDUM";
 const joinPack = (...arg) => {
     return path_1.default.join(__dirname, "../", ...arg);
 };
 function log(...arg) {
     return console.log(`[${PACKAGE_NAME}] `, ...arg);
+}
+// let allAssets = [];
+function string2unicode(str) {
+    var ret = "";
+    var ustr = "";
+    for (var i = 0; i < str.length; i++) {
+        var code = str.charCodeAt(i);
+        var code16 = code.toString(16);
+        if (code < 0xf) {
+            ustr = "\\u" + "000" + code16;
+        }
+        else if (code < 0xff) {
+            ustr = "\\u" + "00" + code16;
+        }
+        else if (code < 0xfff) {
+            ustr = "\\u" + "0" + code16;
+        }
+        else {
+            ustr = "\\u" + code16;
+        }
+        ret += ustr;
+        //ret += "\\u" + str.charCodeAt(i).toString(16);   
+    }
+    return ret;
 }
 exports.throwError = true;
 const load = async function () {
@@ -34,8 +56,6 @@ const load = async function () {
 };
 exports.load = load;
 const onBeforeBuild = async function (options) {
-    if (!(0, builder_1.checkAndEnable)(options))
-        return;
     console.log(options);
     // revisePlatCfg(options);
 };
@@ -53,10 +73,14 @@ const onAfterBuild = async function (options, result) {
     if ((0, builder_1.checkAndEnable)(options)) {
         attachASProj(options);
         attachLiband(options);
+        reviseGradleProp(options, result);
         attachPlatVariable(options);
         attachChannel2Mainjs(options, result);
-        reviseGradleProp(options, result);
+        attachPackageVersion2Mainjs(options, result, "and_packVersion");
         reviseGradleVersion(options);
+    }
+    if ((0, builder_1.checkIosEnable)(options)) {
+        attachPackageVersion2Mainjs(options, result, "ios_packVersion");
     }
 };
 exports.onAfterBuild = onAfterBuild;
@@ -277,7 +301,7 @@ function attachPlatVariable(options) {
     const propCnt = (0, fs_extra_1.readFileSync)(propPath, "utf-8");
     const checkVariable = [
         "OPPO_APP_ID", "OPPO_APP_KEY", "OPPO_APP_SECRET",
-        "MI_APP_ID", "MI_APP_KEY", "MI_APP_NAME",
+        "MI_APP_ID", "MI_APP_KEY", "MI_APP_NAME", "MI_SPLASH_ID",
         "TAPTAP_CLIENT_ID", "CSJ_APP_ID", "CSJ_APP_NAME", "CSJ_BANNER_HEIGHT", "CSJ_BANNER_WIDTH",
         "VIVO_APP_ID", "VIVO_AD_MEDIA_ID",
     ];
@@ -293,7 +317,10 @@ function attachPlatVariable(options) {
     checkVariable.forEach(vKey => {
         const vVal = options.packages['plat-helper'][vKey];
         if (vVal && vVal != "") {
-            propLines.push(`${vKey}="${vVal}"`);
+            // const unicode_vVal = escape(vVal).replace(/\%u/g, "\\u");
+            const unicode_vVal = string2unicode(vVal);
+            console.log(vVal, "->", unicode_vVal);
+            propLines.push(`${vKey}="${unicode_vVal}"`);
             log("+ " + `${vKey}="${vVal}"`);
         }
     });
@@ -317,7 +344,9 @@ function tmpHub() {
 function reviseGradleProp(options, result) {
     if (options.platform != "android")
         return;
-    const { and_channel: and_channel, PROTOCOL_URL, PRIVATE_URL, and_enableAd: enableAd } = options.packages['plat-helper'];
+    const { and_channel: and_channel, and_packVersion, PROTOCOL_URL, PRIVATE_URL,
+    // and_enableAd: enableAd
+     } = options.packages['plat-helper'];
     const pjoin = Editor.Utils.Path.join;
     const projPath = pjoin(options.buildPath.replace("project://", Editor.Project.path + "\\"), options.outputName, "proj");
     const propPath = pjoin(projPath, "gradle.properties");
@@ -326,21 +355,25 @@ function reviseGradleProp(options, result) {
     const enableJetifier = "android.enableJetifier=true";
     const protocolUrl = `PROTOCOL_URL="${PROTOCOL_URL}"`;
     const privateUrl = `PRIVATE_URL="${PRIVATE_URL}"`;
-    const designWidth = `DESIGN_HEIGHT=${result.settings.screen.designResolution.height}`;
-    const designHeight = `DESIGN_WIDTH=${result.settings.screen.designResolution.width}`;
+    const umAppkey = `UM_APPKEY="${options.packages['plat-helper'].umId}"`;
+    const packVersion = `PACK_VERSION=${and_packVersion}\nPACK_VERSION_NAME=${and_packVersion}.0`;
+    const designWidth = `DESIGN_HEIGHT=${result.settings ? result.settings.screen.designResolution.height : result["__task"].options.designResolution.height}`;
+    const designHeight = `DESIGN_WIDTH=${result.settings ? result.settings.screen.designResolution.width : result["__task"].options.designResolution.width}`;
     const channel = `CHANNEL=${and_channel}`;
-    const enableAdProp = `ENABLE_AD=${enableAd ? 1 : 0}`;
+    // const enableAdProp = `ENABLE_AD=${enableAd ? 1 : 0}`
     const compileJavaCommend = `#业务编码字符集, 注意这是指定源码解码的字符集[编译器]`;
     const compileJava = `compileJava.options.encoding="UTF-8"`;
     const compileTestJavaCommend = `#测试编码字符集, 注意这是指定源码解码的字符集[编译器]`;
     const compileTestJava = `compileTestJava.options.encoding="UTF-8"`;
     const lineRemoveDetects = [
         "android.useAndroidX", "android.enableJetifier",
-        "PROTOCOL_URL", "PRIVATE_URL",
+        "PROTOCOL_URL", "PRIVATE_URL", "PACK_VERSION", "PACK_VERSION_NAME", "UM_APPKEY",
         "ENABLE_AD",
         "DESIGN_HEIGHT", "DESIGN_WIDTH", "CHANNEL",
-        "#业务编码字符集", "compileJava.options.encoding",
-        "#测试编码字符集", "compileTestJava.options.encoding",
+        "业务编码字符集", "compileJava.options.encoding",
+        "#\u4E1A\u52A1\u7F16\u7801\u5B57\u7B26\u96C6",
+        "测试编码字符集", "compileTestJava.options.encoding",
+        "#\u6D4B\u8BD5\u7F16\u7801\u5B57\u7B26\u96C6",
     ];
     let propLines = propCnt.split("\n");
     for (let index = 0; index < propLines.length; index++) {
@@ -358,14 +391,6 @@ function reviseGradleProp(options, result) {
     //         log("已将 AS工程 min_sdk_version 设置为 23 ");
     //     }
     // }
-    if ([builder_1.Channel.Oppo, builder_1.Channel.Mi].includes(and_channel)) {
-        propLines.push(useAndroidX);
-        log("已为 AS工程 开启 useAndroidX ");
-    }
-    if ([builder_1.Channel.Oppo, builder_1.Channel.Mi].includes(and_channel)) {
-        propLines.push(enableJetifier);
-        log("已为 AS工程 开启 enableJetifier");
-    }
     if ([builder_1.Channel.Mi, builder_1.Channel.Taptap].includes(and_channel)) {
         propLines.push(compileJavaCommend);
         propLines.push(compileJava);
@@ -373,8 +398,16 @@ function reviseGradleProp(options, result) {
         propLines.push(compileTestJava);
         log("已为 AS工程 设置编码字符集");
     }
-    propLines.push(enableAdProp);
-    log("+" + enableAdProp);
+    if ([builder_1.Channel.Oppo, builder_1.Channel.Mi, builder_1.Channel.YYB].includes(and_channel)) {
+        propLines.push(useAndroidX);
+        log("已为 AS工程 开启 useAndroidX ");
+    }
+    if ([builder_1.Channel.Oppo, builder_1.Channel.Mi, builder_1.Channel.YYB].includes(and_channel)) {
+        propLines.push(enableJetifier);
+        log("已为 AS工程 开启 enableJetifier");
+    }
+    // propLines.push(enableAdProp);
+    // log("+" + enableAdProp);
     propLines.push(protocolUrl);
     log("+" + protocolUrl);
     propLines.push(privateUrl);
@@ -385,6 +418,10 @@ function reviseGradleProp(options, result) {
     log("+" + designWidth);
     propLines.push(channel);
     log("+" + channel);
+    propLines.push(packVersion);
+    log("+" + packVersion);
+    propLines.push(umAppkey);
+    log("+" + umAppkey);
     (0, fs_extra_1.writeFileSync)(propPath, propLines.join("\n"));
 }
 function reviseGradleVersion(options) {
@@ -419,5 +456,19 @@ function attachChannel2Mainjs(options, result) {
     const data = fs_extra_2.default.readFileSync(url, "utf-8");
     const newStr = inject_script + data;
     fs_extra_2.default.writeFileSync(url, newStr, { encoding: "utf-8" });
-    console.warn("(window.channel) updated in built main.js for hot update");
+    console.warn("(window.channel) updated in built main.js.");
+}
+function attachPackageVersion2Mainjs(options, result, key) {
+    const packageVersion = options.packages['plat-helper'][key];
+    const pjoin = Editor.Utils.Path.join;
+    const inject_script = `window.packageVersion = "${packageVersion}";\n
+    `;
+    var url = pjoin(result.dest, 'data', 'main.js');
+    if (!fs_extra_2.default.existsSync(url)) {
+        url = pjoin(result.dest, 'assets', 'main.js');
+    }
+    const data = fs_extra_2.default.readFileSync(url, "utf-8");
+    const newStr = inject_script + data;
+    fs_extra_2.default.writeFileSync(url, newStr, { encoding: "utf-8" });
+    console.warn("(window.packageVersion) updated in built main.js.");
 }

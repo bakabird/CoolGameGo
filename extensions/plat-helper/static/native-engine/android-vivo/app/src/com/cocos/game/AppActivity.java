@@ -28,11 +28,15 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
+import android.widget.FrameLayout;
 
+import com.LinesXFree.cocos.R;
 import com.cocos.lib.CocosActivity;
 import com.cocos.service.SDKWrapper;
 import com.qhhz.cocos.libandroid.Runkit;
+import com.qhhz.cocos.libandroid.SplashDialog;
 import com.vivo.unionsdk.open.VivoUnionSDK;
 
 public class AppActivity extends CocosActivity {
@@ -43,6 +47,18 @@ public class AppActivity extends CocosActivity {
     private String m_usernamel;
     private String m_openid;
     private String m_authToken;
+
+    private FrameLayout mTemplateParentLayout = null;
+
+    private FrameLayout mWaterFlowerLayout = null;
+
+    public FrameLayout getTemplateParentLayout() {
+        return mTemplateParentLayout;
+    }
+
+    public FrameLayout getWaterFlowerLayout() {
+        return mWaterFlowerLayout;
+    }
 
     public static AppActivity get() {
         return _me;
@@ -60,6 +76,33 @@ public class AppActivity extends CocosActivity {
         // DO OTHER INITIALIZATION BELOW
         SDKWrapper.shared().init(this);
         JSBKit.get().build();
+        initTemplateLayout();
+        initWaterFlowerLayout();
+        splashOpen();
+    }
+
+    private void initTemplateLayout() {
+        mTemplateParentLayout =new FrameLayout(this);
+        FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        containerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL; //上下的位置信息
+        this.addContentView(mTemplateParentLayout, containerParams);
+    }
+
+    private void initWaterFlowerLayout() {
+        mWaterFlowerLayout =new FrameLayout(this);
+        FrameLayout.LayoutParams containerParams = new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT
+        );
+        containerParams.gravity = Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL; //上下的位置信息
+        this.addContentView(mWaterFlowerLayout, containerParams);
+    }
+
+    private void splashOpen() {
+        SplashDialog.Show(this, R.mipmap.ic_launcher);
     }
 
     @Override
@@ -183,5 +226,9 @@ public class AppActivity extends CocosActivity {
 
     public void setM_authToken(String m_authToken) {
         this.m_authToken = m_authToken;
+    }
+
+    public int dpToPx(int dps) {
+        return Math.round(getResources().getDisplayMetrics().density * dps);
     }
 }

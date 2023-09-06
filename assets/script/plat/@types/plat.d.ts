@@ -90,4 +90,5 @@ declare let tt: {
 declare interface Window {
     uma: UMA,
     channel: string,
+    packageVersion: number,
 }

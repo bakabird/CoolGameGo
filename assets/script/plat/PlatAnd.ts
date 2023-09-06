@@ -1,5 +1,5 @@
 import { NATIVE } from "cc/env";
-import PlatBase, { ADCallback, Channel, GamePlat } from "./PlatBase";
+import PlatBase, { ADCallback, AndLayoutGravity, Channel, GamePlat } from "./PlatBase";
 // 3.6.0 以前将下面两行注释即可
 import { native } from "cc";
 var jsb = native;
@@ -16,6 +16,8 @@ export default class PlatAnd extends PlatBase {
     }
 
     private _onShowRwdAdCallback: (isSuc: boolean, errcode?: number) => void;
+    private _onShowTemplateAdCallback: (errcode?: number) => void;
+    private _onShowInsertAdCallback: (errcode?: number) => void;
     private _onLoginCallback: Function;
     private _onCheckPlatReady: (env: "Debug" | "Release") => void;
     private _uma: UMA;
@@ -27,11 +29,24 @@ export default class PlatAnd extends PlatBase {
     constructor() {
         super();
         if (NATIVE) {
+            jsb.jsbBridgeWrapper.removeAllListeners();
             jsb.jsbBridgeWrapper.addNativeEventListener("ShowAdRet", (code: string) => {
                 var icode = parseInt(code);
                 this.logCatch("ShowAdRet")
                 this._onShowRwdAdCallback?.(icode == 1, icode == 0 ? 0 : -1);
                 this._onShowRwdAdCallback = null;
+            });
+            jsb.jsbBridgeWrapper.addNativeEventListener("TemplateAdRet", (code: string) => {
+                var icode = parseInt(code);
+                this.logCatch("TemplateAdRet")
+                this._onShowTemplateAdCallback?.(icode == 1 ? null : icode);
+                this._onShowTemplateAdCallback = null;
+            });
+            jsb.jsbBridgeWrapper.addNativeEventListener("InsertAdRet", (code: string) => {
+                var icode = parseInt(code);
+                this.logCatch("InsertAdRet")
+                this._onShowInsertAdCallback?.(icode == 1 ? null : icode);
+                this._onShowInsertAdCallback = null;
             });
             jsb.jsbBridgeWrapper.addNativeEventListener("AntiAddictionRet", (code: string) => {
                 this.logCatch("AntiAddictionRet")
@@ -98,6 +113,40 @@ export default class PlatAnd extends PlatBase {
         }
     }
 
+    public showTemplateAd(arg: {
+        posId: string,
+        onAdClose: (errcode?: number) => void,
+        widthMode: "Dip" | "MatchParent" | "WrapContent",
+        force: boolean,
+        widthDp?: number,
+        scale?: number,
+        gravity?: AndLayoutGravity,
+        debug?: boolean,
+    }) {
+        if (NATIVE) {
+            arg.widthDp ??= 300;
+            arg.scale ??= 100;
+            arg.gravity ??= AndLayoutGravity.Bottom | AndLayoutGravity.Center;
+            arg.debug ??= false;
+            arg["andMiArg"] = {
+                widthMode: arg.widthMode,
+                force: arg.force,
+                widthDp: arg.widthDp,
+                scale: arg.scale,
+                gravity: arg.gravity,
+                debug: arg.debug,
+            };
+            this._onShowTemplateAdCallback = arg.onAdClose;
+            jsb.jsbBridgeWrapper.dispatchEventToNative('ShowTemplateAd', JSON.stringify(arg));
+        }
+    }
+
+    public hideTemplateAd() {
+        if (NATIVE) {
+            this._onShowTemplateAdCallback = null;
+            jsb.jsbBridgeWrapper.dispatchEventToNative('HideTemplateAd');
+        }
+    }
 
     public showRewardAd(arg: {
         suc: () => void,
@@ -124,9 +173,13 @@ export default class PlatAnd extends PlatBase {
 
     public showInterstitialAd(arg: {
         posId: string,
+        onAdClose?: (errcode?: number) => void
     }) {
         if (NATIVE) {
+            this._onShowInsertAdCallback = arg.onAdClose;
             jsb.jsbBridgeWrapper.dispatchEventToNative('ShowInterstitialAd', arg.posId);
+        } else {
+            super.showInterstitialAd(arg);
         }
     }
 
@@ -167,5 +220,9 @@ export default class PlatAnd extends PlatBase {
 
     public get channel(): Channel {
         return window.channel as Channel;
+    }
+
+    public get packageVersion(): number {
+        return window.packageVersion ?? 1;
     }
 }

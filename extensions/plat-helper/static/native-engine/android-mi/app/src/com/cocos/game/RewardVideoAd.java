@@ -7,7 +7,6 @@ import android.util.Log;
 import androidx.lifecycle.MutableLiveData;
 
 import com.LinesXFree.cocos.BuildConfig;
-import com.bytedance.sdk.openadsdk.TTAdSdk;
 import com.qhhz.cocos.libandroid.PermissionTipDialog;
 import com.qhhz.cocos.libandroid.SPStorage;
 import com.xiaomi.ad.mediation.MMAdConfig;
@@ -29,6 +28,8 @@ public class RewardVideoAd {
     private Activity mActivity;
     private MMAdRewardVideo mAdRewardVideo;
     private boolean autoPlay;
+
+    private boolean bGetRewrad;
 
     public RewardVideoAd(String posId) {
         AD_TAG_ID = posId;
@@ -110,6 +111,7 @@ public class RewardVideoAd {
         Log.d(TAG, "reqAd. id " + uid);
         if (statu != 0) {
             Log.d(TAG, "reqAdCancel statu is " + statu);
+            autoPlay = true;
             return;
         }
         MMAdConfig adConfig = new MMAdConfig();
@@ -143,23 +145,33 @@ public class RewardVideoAd {
                 new MMRewardVideoAd.RewardVideoAdInteractionListener() {
                     @Override
                     public void onAdShown(MMRewardVideoAd mmRewardVideoAd) {
+                        bGetRewrad = false;
+                        Log.d(TAG, "onAdShown ");
                     }
 
                     @Override
                     public void onAdClicked(MMRewardVideoAd mmRewardVideoAd) {
+                        Log.d(TAG, "onAdClicked ");
                     }
 
                     @Override
                     public void onAdError(MMRewardVideoAd mmRewardVideoAd, MMAdError error) {
+                        Log.d(TAG, "onAdError ");
                         JSBKit.get().ShowAdRet("0");
                     }
 
                     @Override
                     public void onAdVideoComplete(MMRewardVideoAd mmRewardVideoAd) {
+                        Log.d(TAG, "onAdVideoComplete ");
                     }
 
                     @Override
                     public void onAdClosed(MMRewardVideoAd mmRewardVideoAd) {
+                        Log.d(TAG, "onAdClosed ");
+                        if(!bGetRewrad){
+                            JSBKit.get().ShowAdRet("0");
+                        }
+                        bGetRewrad = false;
                         if(statu == -1) return;
                         statu = 0;
                         AdKit.get().loadRwdAd(AD_TAG_ID);
@@ -167,15 +179,24 @@ public class RewardVideoAd {
 
                     @Override
                     public void onAdReward(MMRewardVideoAd mmRewardVideoAd, MMAdReward mmAdReward) {
-                        JSBKit.get().ShowAdRet("1");
+                        Log.d(TAG, "onAdReward ");
+
+                        if(!bGetRewrad){
+                            bGetRewrad = true;
+                            JSBKit.get().ShowAdRet("1");
+                        }
+
                     }
 
                     @Override
                     public void onAdVideoSkipped(MMRewardVideoAd mmRewardVideoAd) {
+                        Log.d(TAG, "onAdVideoSkipped ");
                         JSBKit.get().ShowAdRet("0");
                     }
                 });
-        ad.showAd(mActivity);
+        mActivity.runOnUiThread(()->{
+            ad.showAd(mActivity);
+        });
     }
 
     public Context requireContext() {

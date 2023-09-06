@@ -55,17 +55,19 @@ public class InsertAd {
                 .setAdLoadType(TTAdLoadType.LOAD) // 本次广告用途：TTAdLoadType.LOAD实时；TTAdLoadType.PRELOAD预请求
                 .build();
         //step6:注册广告加载生命周期监听，请求广告
-        mAdLoadListener = new AdLoadListener(appAct, ()->{
-            if(statu == -1) return;
+        mAdLoadListener = new AdLoadListener(appAct, () -> {
+            if (statu == -1) return;
             statu = 2;
             statu = 3;
             mAdLoadListener.showAd(TTAdConstant.RitScenes.CUSTOMIZE_SCENES, "scenes_test");
+        }, code -> {
+            statu = 0;
+            mAdLoadListener = null;
+            JSBKit.get().InsertAdRet(code);
         }, ()->{
             statu = 0;
             mAdLoadListener = null;
-        }, ()->{
-            statu = 0;
-            mAdLoadListener = null;
+            JSBKit.get().InsertAdRet("1");
         });
         mAdKit.getTTAdNative().loadFullScreenVideoAd(adSlot, mAdLoadListener);
     }
@@ -76,6 +78,7 @@ public class InsertAd {
     public void play() {
         if(statu == -1) return;
         if (mAdKit.adCheck() < 0) {
+            JSBKit.get().InsertAdRet("0");
             return;
         }
         if (statu == 0) {
@@ -89,16 +92,19 @@ public class InsertAd {
      */
 
     private static class AdLoadListener implements TTAdNative.FullScreenVideoAdListener {
+        public interface OnLoadFail {
+            void onFail(String code);
+        }
 
         private final Activity mActivity;
 
         private TTFullScreenVideoAd mAd;
 
         private Runnable mOnLoaded;
-        private Runnable mOnLoadfail;
+        private OnLoadFail mOnLoadfail;
         private Runnable mOnAdClose;
 
-        public AdLoadListener(Activity activity, Runnable onLoaded, Runnable onLoadfail, Runnable onAdClose) {
+        public AdLoadListener(Activity activity, Runnable onLoaded, OnLoadFail onLoadfail, Runnable onAdClose) {
             mActivity = activity;
             mOnLoaded = onLoaded;
             mOnLoadfail = onLoadfail;
@@ -108,7 +114,7 @@ public class InsertAd {
         @Override
         public void onError(int code, String message) {
             Log.e(TAG, "Callback --> onError: " + code + ", " + message);
-            dealCallback(false);
+            dealCallback("" + code);
         }
 
         @Override
@@ -130,14 +136,15 @@ public class InsertAd {
             handleAd(ad);
         }
 
-        private void dealCallback(boolean suc) {
+        private void dealCallback(String errcode) {
+            boolean suc = errcode.equals("");
             Log.d(TAG, "dealCallback " +  suc);
             if(mOnLoaded == null) return;
             if(mOnLoadfail == null) return;
             if(suc) {
                 mOnLoaded.run();
             } else  {
-                mOnLoadfail.run();
+                mOnLoadfail.onFail(errcode);
             }
             mOnLoaded = null;
             mOnLoadfail = null;
@@ -148,13 +155,13 @@ public class InsertAd {
          */
         public void handleAd(TTFullScreenVideoAd ad) {
             if (mAd != null) {
-                dealCallback(false);
+                dealCallback("-2");
                 return;
             }
             mAd = ad;
             //【必须】广告展示时的生命周期监听
             mAd.setFullScreenVideoAdInteractionListener(new AdLifeListener(mActivity, mOnAdClose));
-            dealCallback(true);
+            dealCallback("");
             //【可选】监听下载状态
 //            mAd.setDownloadListener(new DownloadStatusListener());
         }

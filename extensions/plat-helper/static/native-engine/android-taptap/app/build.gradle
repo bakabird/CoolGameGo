@@ -25,8 +25,8 @@ android {
         buildConfigField "String", "CSJ_BANNER_WIDTH", CSJ_BANNER_WIDTH
         buildConfigField "String", "CSJ_BANNER_HEIGHT", CSJ_BANNER_HEIGHT
 
-        versionCode 1
-        versionName "1.0"
+        versionCode PACK_VERSION.toInteger()
+        versionName PACK_VERSION_NAME
 
         externalNativeBuild {
             cmake {
@@ -67,6 +67,14 @@ android {
                 keyPassword RELEASE_KEY_PASSWORD
             }
         }
+        debug {
+            if (project.hasProperty("RELEASE_STORE_FILE") && !RELEASE_STORE_FILE.isEmpty()) {
+                storeFile file(RELEASE_STORE_FILE)
+                storePassword RELEASE_STORE_PASSWORD
+                keyAlias RELEASE_KEY_ALIAS
+                keyPassword RELEASE_KEY_PASSWORD
+            }
+        }
     }
 
     buildTypes {
@@ -89,6 +97,9 @@ android {
             renderscriptDebuggable true
             // resValue  "string", "app_name", "${PROP_APP_NAME}-dbg"
             // applicationIdSuffix ".debug"
+            if (project.hasProperty("RELEASE_STORE_FILE")) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 
