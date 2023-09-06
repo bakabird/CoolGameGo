@@ -28,9 +28,9 @@ function getFileVersion(path) {
 
 async function main() {
     const relPath = "assets/resources/version.manifest"
-    const relUrl = "https://www.bttx199.com/Product/gameasset/tocard/native/release/version.manifest";
+    const relUrl = "https://www.bttx199.com/Product/gameasset/path2project/native/release/version.manifest";
     const degPath = "assets/resources/debug/version.manifest"
-    const degUrl = "https://www.bttx199.com/Product/gameasset/tocard/native/debug/version.manifest"
+    const degUrl = "https://www.bttx199.com/Product/gameasset/path2project/native/debug/version.manifest"
     const localRelVer = await getFileVersion(relPath)
     const relVer = await getVersion(relUrl)
     const localDegVer = await getFileVersion(degPath)

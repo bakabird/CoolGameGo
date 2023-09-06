@@ -6,8 +6,6 @@ CoolGameGo
 
 ```
 npm i coolgame-cc
-npm i coolgame-cc-sys-fui
-npm i coolgame-cc-sys-time
 npm i fairygui-ccc370
 npm i gulp
 npm i gulp-tinypng-with-cache-rdd-mod
@@ -41,7 +39,7 @@ npm i gnfun
 2. `Plat.inst.plat` 来获取当前平台。
 3. `Plat.inst.channel` 来获取当前渠道（安卓）。
 4. AdCfg.ts 中配置各个 平台/渠道 下的广告位。
-****
+
 # 0x05 热更新
 
 1. 代码中主要通过 `CCCHotfix` 来进行热更新。
