@@ -1,6 +1,7 @@
-import type TimeSys from "coolgame-cc-sys-time";
 import type { CoolGame } from "./CoolGame";
-import type { DlgKit, FUISys } from "coolgame-cc-sys-fui";
+import { DlgKit } from "./sys/fuiSys/DlgKit";
+import { FUISys } from "./sys/fuiSys/FUISys";
+import TimeSys from "./sys/timeSys/TimeSys";
 
 var game: CoolGame;
 var fuiSys: FUISys;

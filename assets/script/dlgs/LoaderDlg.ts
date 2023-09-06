@@ -1,8 +1,8 @@
-import { DlgBase } from "coolgame-cc-sys-fui";
 import { GProgressBar, GTextField } from "fairygui-ccc370";
 import CCCHotfix from "../CCCHotfix";
 import { easyEncode } from "gnfun"
 import Plat from "../plat/Plat";
+import { DlgBase } from "../sys/fuiSys/DlgBase";
 
 export class LoaderDlg extends DlgBase {
     public static me: LoaderDlg;

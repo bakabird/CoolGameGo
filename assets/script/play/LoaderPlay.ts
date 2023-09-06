@@ -1,17 +1,17 @@
 import { PlayBase } from "coolgame-cc";
-import { Action } from "coolgame-cc/Define";
 import Go from "../Go";
 import { LoaderDlg } from "../dlgs/LoaderDlg";
 import CCCHotfix from "../CCCHotfix";
 import { game } from "cc";
 import { ModalDlg } from "../dlgs/ModalDlg";
+import { Call } from "../CommonInterface";
 
 export class LoaderPlay extends PlayBase {
     playName: string = "LoaderPlay";
-    protected OnInit(complete: Action): void {
+    protected OnInit(complete: Call): void {
         complete()
     }
-    protected OnLateInit(complete: Action): void {
+    protected OnLateInit(complete: Call): void {
         complete()
     }
     protected OnDispose(): void {

@@ -1,7 +1,7 @@
-import { DlgBase } from "coolgame-cc-sys-fui";
 import { easyEncode } from "gnfun";
 import CCCHotfix from "../CCCHotfix";
 import Plat from "../plat/Plat";
+import { DlgBase } from "../sys/fuiSys/DlgBase";
 
 export class MainDlg extends DlgBase {
     get dlgRes(): string {

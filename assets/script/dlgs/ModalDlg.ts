@@ -1,16 +1,18 @@
-import { Action } from "coolgame-cc/Define";
+import { Call } from "../CommonInterface";
 import Go from "../Go";
-import { DlgBase, DlgLayer, UIDocker } from "coolgame-cc-sys-fui";
+import { DlgBase } from "../sys/fuiSys/DlgBase";
+import { DlgLayer } from "../sys/fuiSys/DlgKit";
+import { UIDocker } from "../sys/fuiSys/UIDocker";
 
 
 export class ModalDlg extends DlgBase {
     public static pop(option: {
         tip: string;
         yesText?: string;
-        onYes: Action;
+        onYes: Call;
         yesClose?: boolean;
         noText?: string;
-        onNo?: Action;
+        onNo?: Call;
         noClose?: boolean;
         bgClose?: boolean;
         type?: "confirm" | "alert";
@@ -46,8 +48,8 @@ export class ModalDlg extends DlgBase {
     private _bgClose: boolean;
 
     public setData(tip: string, bgClose: boolean,
-        yesText: string, onYes: Action, yesClose: boolean,
-        noText: string, onNo: Action, noClose: boolean, type: "confirm" | "alert") {
+        yesText: string, onYes: Call, yesClose: boolean,
+        noText: string, onNo: Call, noClose: boolean, type: "confirm" | "alert") {
         this._bgClose = bgClose;
         this.getTxt("tip").text = tip;
         this.getBtn("yes").text = yesText;
