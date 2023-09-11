@@ -5,7 +5,7 @@
     "version": "3.7.3"
   },
   "dependencies": {
-    "coolgame-cc": "^0.0.12",
+    "coolgame-cc": "^0.0.14",
     "fairygui-ccc370": "^1.0.7",
     "gnfun": "^0.0.14",
     "gulp": "^4.0.2",
