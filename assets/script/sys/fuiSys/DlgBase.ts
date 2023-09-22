@@ -285,7 +285,7 @@ export abstract class DlgBase extends UIBase {
      * @returns 背景Loader资源路径
      */
     protected OnGetBgLoaderResUrl(): string {
-        return "ui://9fdeszvrl5pz1c";
+        return "ui://s7dhqm6ngdmd2";
     }
 
     /**

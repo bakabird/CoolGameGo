@@ -5,6 +5,7 @@
     <component id="uzar1" name="Btn.xml" path="/"/>
     <component id="uzar2" name="ModalDlg.xml" path="/" exported="true"/>
     <component id="uzar3" name="ProgressBar.xml" path="/"/>
+    <image id="gdmd2" name="tile.png" path="/" exported="true"/>
   </resources>
   <publish name=""/>
 </packageDescription>
